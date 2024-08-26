@@ -1042,7 +1042,7 @@ export default function Profile() {
             }
           >
             <Tabs
-              defaultValue="history"
+              defaultValue="orders"
               className="w-full flex flex-col items-center"
             >
               {!meow?.isAdmin ? (
@@ -1221,7 +1221,7 @@ export default function Profile() {
                 ) : (
                   <>
                     <TabsContent
-                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 h-full overflow-y-scroll"
+                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 lg:h-[730px] h-full overflow-y-scroll"
                       value="orders"
                     >
                       <div className="h-full overflow-auto">

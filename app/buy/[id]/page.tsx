@@ -556,20 +556,7 @@ export default function CarDetails() {
 
   return (
     <>
-      <style jsx global>{`
-        html,
-        body {
-          overflow: hidden;
-        }
-
-        @media (max-width: 1024px) {
-          html,
-          body {
-            overflow: auto;
-          }
-        }
-      `}</style>
-      <div className="grid grid-cols-10 h-screen">
+      <div className="grid grid-cols-10 h-screen overflow-auto lg:overflow-hidden">
         {/* Fixed Image Section */}
         <div className="col-span-10 lg:col-span-7 flex flex-col px-10">
           <div className="h-[75%] grid place-items-center">

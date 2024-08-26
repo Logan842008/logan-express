@@ -1231,7 +1231,7 @@ export default function Profile() {
                           userOrders.map((order) => (
                             <div
                               key={order.id}
-                              className="flex overflow-y-scroll flex-col my-4 lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
+                              className="flex flex-col my-4 lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
                             >
                               <img
                                 src={order.modelimg}
@@ -1291,7 +1291,7 @@ export default function Profile() {
                           userRentals.map((rental) => (
                             <div
                               key={rental.id}
-                              className="flex overflow-y-scroll flex-col my-4 lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
+                              className="flex flex-col my-4 lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
                             >
                               <img
                                 src={rental.car.modelimg}

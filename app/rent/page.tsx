@@ -150,7 +150,7 @@ export default function Rent() {
 
   return (
     <div className="w-full flex items-center h-full justify-center p-10">
-      <div className="grid grid-cols-1 md:grid-cols-3 w-3/4 mt-5 gap-6 ">
+      <div className="grid grid-cols-1 md:grid-cols-4 w-3/4 mt-5 gap-6 ">
         <DateRangePicker
           label="Rental Start / End"
           labelPlacement="outside"
@@ -158,7 +158,7 @@ export default function Rent() {
           minValue={today(getLocalTimeZone())}
           value={dateRange}
           onChange={(range) => setDateRange(range)}
-          className="mb-5"
+          className="mb-5 col-span-2"
           granularity="minute"
         />
 

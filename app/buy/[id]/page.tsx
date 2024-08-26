@@ -595,7 +595,7 @@ export default function CarDetails() {
         </div>
 
         {/* Scrollable Configuration Section */}
-        <div className="col-span-10 lg:col-span-3 h-screen overflow-y-scroll pb-56 lg:pb-32 p-10">
+        <div className="col-span-10 lg:col-span-3 h-screen overflow-y-scroll pb-56 lg:pb-44 p-10">
           <Accordion variant="splitted" selectionMode="multiple">
             <AccordionItem
               key="1"

@@ -35,7 +35,7 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          "min-h-screen overflow-x-hidden bg-background",
+          "min-h-screen overflow-hidden bg-background",
           poppins.className
         )}
       >

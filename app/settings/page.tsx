@@ -1037,8 +1037,8 @@ export default function Profile() {
           <div
             className={
               !meow?.isAdmin
-                ? "w-full xl:w-2/3 flex flex-col gap-6 bg-neutral-200 justify-between items-start dark:bg-neutral-800 p-7 rounded-3xl align-top"
-                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll"
+                ? "w-full xl:w-2/3 flex flex-col gap-6 bg-neutral-200 justify-between items-start dark:bg-neutral-800 p-7 rounded-3xl align-top lg:h-[850px] h-full"
+                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll lg:h-[850px] h-full"
             }
           >
             <Tabs
@@ -1057,7 +1057,7 @@ export default function Profile() {
               ) : (
                 <></>
               )}
-              <div className="flex-grow w-full mt-2">
+              <div className="flex-grow w-full mt-2 ">
                 {meow?.isAdmin ? (
                   <>
                     <Accordion>
@@ -1281,7 +1281,7 @@ export default function Profile() {
                       </div>
                     </TabsContent>
                     <TabsContent
-                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 h-full lg:h-[850px] overflow-y-scroll"
+                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 h-full overflow-y-scroll"
                       value="rents"
                     >
                       <div className="h-full overflow-auto">

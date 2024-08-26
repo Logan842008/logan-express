@@ -684,7 +684,10 @@ export default function CarDetails() {
             <AccordionItem key="3" aria-label="colors" title="Select Color">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
                 {colorOptions.map((color: any, index: number) => (
-                  <div className="flex flex-col justify-center items-center">
+                  <div
+                    key={index}
+                    className="flex flex-col justify-center items-center"
+                  >
                     <Card
                       key={index}
                       isPressable

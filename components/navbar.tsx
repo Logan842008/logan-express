@@ -278,6 +278,9 @@ export const Navbar = ({ theme }: { theme: string }) => {
               <DropdownItem key="settings" href="/settings">
                 Settings
               </DropdownItem>
+              <DropdownItem key="history" href="/settings">
+                History
+              </DropdownItem>
               <DropdownItem key="logout" color="danger" onClick={handleLogout}>
                 Log Out
               </DropdownItem>

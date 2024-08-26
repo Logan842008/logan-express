@@ -194,7 +194,7 @@ export default function Rent() {
           filteredCars.map((car, index) => (
             <Card
               shadow="sm"
-              className="border-2 border-orange-500"
+              className="border-2 border-orange-500 col-span-2"
               key={index}
               isPressable
               onPress={() =>

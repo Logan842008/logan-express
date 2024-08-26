@@ -937,10 +937,10 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col lg:px-4 rounded-3xl">
+    <div className="w-full h-full flex flex-col lg:px-4 rounded-3xl items-center justify-center">
       {user && (
         <div className="w-full flex xl:flex-row flex-col justify-between h-full items-center gap-7">
-          <div className="bg-neutral-200 w-full xl:w-1/3 flex h-[800px] flex-col justify-between items-center dark:bg-neutral-800 p-4 rounded-3xl">
+          <div className="bg-neutral-200 w-full xl:w-1/3 flex h-full flex-col justify-between items-center dark:bg-neutral-800 p-4 rounded-3xl">
             <h2 className="text-3xl mb-4 font-extrabold">PROFILE</h2>
             <Image
               isBlurred
@@ -1037,8 +1037,8 @@ export default function Profile() {
           <div
             className={
               !meow?.isAdmin
-                ? "w-full xl:w-2/3 flex flex-col gap-6 bg-neutral-200 justify-between items-start dark:bg-neutral-800 p-7 rounded-3xl align-top lg:h-[800px] h-full"
-                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll lg:h-[800px] h-full"
+                ? "w-full xl:w-2/3 flex flex-col gap-6 bg-neutral-200 justify-between items-start dark:bg-neutral-800 p-7 rounded-3xl align-top lg:h-full h-full"
+                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll lg:h-full h-full"
             }
           >
             <Tabs

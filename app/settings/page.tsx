@@ -1221,7 +1221,7 @@ export default function Profile() {
                 ) : (
                   <>
                     <TabsContent
-                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 lg:h-[730px] h-full overflow-y-scroll"
+                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 lg:h-[850px] h-full overflow-y-scroll"
                       value="orders"
                     >
                       <div className="h-full overflow-auto">
@@ -1281,7 +1281,7 @@ export default function Profile() {
                       </div>
                     </TabsContent>
                     <TabsContent
-                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 h-full overflow-y-scroll"
+                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 h-full lg:h-[850px] overflow-y-scroll"
                       value="rents"
                     >
                       <div className="h-full overflow-auto">

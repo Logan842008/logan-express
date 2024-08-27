@@ -8,6 +8,8 @@ import { ToastProvider } from "@/components/ToastContext";
 import ClientLayout from "./client-layout";
 import { Navbar } from "@nextui-org/navbar";
 
+// LOL BAPAK SAMPAH SIAL
+
 export const metadata: Metadata = {
   title: {
     default: "Logan Express",

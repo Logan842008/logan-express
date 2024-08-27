@@ -556,9 +556,9 @@ export default function CarDetails() {
 
   return (
     <>
-      <div className="grid grid-cols-10 h-screen overflow-auto lg:overflow-hidden">
+      <div className="grid grid-cols-10 h-full">
         {/* Fixed Image Section */}
-        <div className="col-span-10 lg:col-span-7 flex flex-col px-10">
+        <div className="col-span-10 lg:col-span-7  flex flex-col px-10">
           <div className="h-[75%] grid place-items-center">
             <img
               alt={`${getBrandNameByKey(brands, car.brand!)} ${car.model}`}
@@ -595,7 +595,7 @@ export default function CarDetails() {
         </div>
 
         {/* Scrollable Configuration Section */}
-        <div className="col-span-10 lg:col-span-3 h-screen overflow-y-scroll pb-56 lg:pb-44 p-10">
+        <div className="col-span-10 lg:col-span-3 h-screen overflow-y-scroll pb-56 lg:pb-32 p-10">
           <Accordion variant="splitted" selectionMode="multiple">
             <AccordionItem
               key="1"
@@ -611,8 +611,8 @@ export default function CarDetails() {
                       isPressable
                       className={`${
                         selectedEngine?.key === engine.key
-                          ? "border-2 border-orange-500 shadow-lg dark:bg-neutral-900 bg-neutral-200"
-                          : "border dark:bg-neutral-900 bg-neutral-200"
+                          ? "border-2 border-orange-500 text-orange-500 shadow-lg bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
+                          : "border dark:border-white border-black bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
                       }`}
                       onClick={() => handleEngineClick(engine.key)}
                     >
@@ -652,8 +652,8 @@ export default function CarDetails() {
                     isPressable
                     className={`${
                       selectedEngineTech?.tech.key === tech.tech.key
-                        ? "border-2 border-orange-500 shadow-lg dark:bg-neutral-900 bg-neutral-200"
-                        : "border dark:bg-neutral-900 bg-neutral-200"
+                        ? "border-2 border-orange-500 text-orange-500 shadow-lg bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
+                        : "border dark:border-white border-black bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
                     }`}
                     onClick={() => handleEngineTechClick(tech.tech.key)}
                   >
@@ -723,8 +723,8 @@ export default function CarDetails() {
                       isDisabled={mandatoryFeatures.includes(feature.key)}
                       className={`${
                         isSelected
-                          ? "border-2 border-orange-500 shadow-lg dark:bg-neutral-900 bg-neutral-200"
-                          : "border dark:bg-neutral-900 bg-neutral-200"
+                          ? "border-2 border-orange-500 text-orange-500 shadow-lg bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
+                          : "border dark:border-white border-black bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
                       } ${
                         mandatoryFeatures.includes(feature.key)
                           ? "cursor-not-allowed"
@@ -769,8 +769,8 @@ export default function CarDetails() {
                       isDisabled={mandatoryFeatures.includes(feature.key)}
                       className={`${
                         isSelected
-                          ? "border-2 border-orange-500 shadow-lg dark:bg-neutral-900 bg-neutral-200"
-                          : "border dark:bg-neutral-900 bg-neutral-200"
+                          ? "border-2 border-orange-500 text-orange-500 shadow-lg bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
+                          : "border dark:border-white border-black bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100"
                       } ${
                         mandatoryFeatures.includes(feature.key)
                           ? "cursor-not-allowed"
@@ -804,7 +804,7 @@ export default function CarDetails() {
       </div>
 
       {/* Sticky bottom container */}
-      <div className="fixed bottom-0 left-0 w-full bg-neutral-100 dark:bg-neutral-900 border-t border-neutral-300 dark:border-neutral-800 shadow-lg py-4 z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100 border-t border-neutral-300 dark:border-neutral-800 shadow-lg py-4 z-50">
         <div className="container mx-auto flex lg:flex-row flex-col justify-between items-center px-4">
           <div>
             <p className="text-2xl font-bold">
@@ -819,7 +819,7 @@ export default function CarDetails() {
               </p>
             </div>
             <Button
-              color="primary"
+              className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:from-green-500 hover:to-green-700"
               onClick={async () => {
                 const result = await Swal.fire({
                   title: "Confirm Payment?",
@@ -832,8 +832,8 @@ export default function CarDetails() {
                   customClass: {
                     popup:
                       theme === "dark"
-                        ? "bg-black rounded-xl text-white"
-                        : "bg-white rounded-xl text-black", // Apply your theme's class
+                        ? "bg-gradient-to-br from-neutral-900 to-neutral-800  border-2 border-orange-500 rounded-xl text-white"
+                        : "from-neutral-300 to-neutral-200 bg-gradient-to-br border-2 border-orange-500 rounded-xl text-black", // Apply your theme's class
                     title: "swal-title",
                     confirmButton: "swal-confirm",
                     cancelButton: "swal-cancel",
@@ -887,6 +887,10 @@ export default function CarDetails() {
 
                         await updateDoc(carRef, { units: newUnits.toString() });
                       }
+
+                      await addDoc(collection(db, "cars-used", "cars", carId), {
+                        user: user.uid,
+                      });
 
                       // Delete the car configuration document after successful purchase
                       const configRef = doc(

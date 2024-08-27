@@ -1,5 +1,5 @@
 "use client";
-import { db } from "@/config";
+import { app, db } from "@/config";
 import {
   Accordion,
   AccordionItem,
@@ -19,7 +19,7 @@ import {
 import { toast } from "react-toastify";
 import { useTheme } from "next-themes";
 import Swal from "sweetalert2";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // Utility functions for mapping keys to names using fetched data
 function getBodyTypeNameByKey(bodyTypes: any[], key: string) {
@@ -69,6 +69,27 @@ export default function CarDetails() {
   const [interiorFeatures, setInteriorFeatures] = useState<any[]>([]);
 
   const [totalCost, setTotalCost] = useState<number>(0);
+  const auth = getAuth(app);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    // Check if user is authenticated
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // If user is not authenticated, redirect and show a toast
+        toast.error("Access denied", {
+          autoClose: 2000,
+          closeOnClick: true,
+          position: "bottom-right",
+          theme,
+        });
+        router.push("/");
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchCarData = async () => {
@@ -195,51 +216,53 @@ export default function CarDetails() {
 
   return (
     <>
-      <div className="grid grid-cols-10 h-screen overflow-auto lg:overflow-hidden">
+      <div className="grid grid-cols-10 items-start p-10 h-full overflow-auto lg:overflow-hidden  text-white">
         {/* Fixed Image Section */}
-        <div className="col-span-10 lg:col-span-7 flex flex-col content-center justify-items-between px-10">
-          <div className="h-[68%] grid place-items-center">
+        <div className="col-span-10 lg:col-span-10 flex flex-col content-center justify-items-between">
+          <div className="h-full grid place-items-center">
             <img
               alt={`${car.brand} ${car.model}`}
-              className="object-cover rounded-xl max-h-full"
+              className="object-cover rounded-xl max-h-full shadow-2xl"
               src={car.modelimg!}
             />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5  gap-4 w-full mt-4 mb-4 lg:mb-0 text-center">
-            <div>
-              <p className="text-xl font-bold text-orange-500">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 w-full mt-4 mb-4 md:mb-0 text-center text-gray-300">
+            <div className="flex justify-between md:flex-col">
+              <p className="text-md text-left md:text-center font-bold text-orange-400">
                 {getLocationNameByKey(locations, car.location)}
               </p>
-              <p className="text-md">Location</p>
+              <p className="text-sm text-gray-400">Location</p>
             </div>
-            <div>
-              <p className="text-xl font-bold text-orange-500">{car.seats}</p>
-              <p className="text-md">Seats</p>
+            <div className="flex justify-between md:flex-col">
+              <p className="text-md text-left md:text-center font-bold text-orange-400">
+                {car.seats}
+              </p>
+              <p className="text-sm text-gray-400">Seats</p>
             </div>
-            <div>
-              <p className="text-xl font-bold text-orange-500">
+            <div className="flex justify-between md:flex-col">
+              <p className="text-md text-left md:text-center font-bold text-orange-400">
                 {getFuelTypeNameByKey(fuels, car.fuel)}
               </p>
-              <p className="text-md">Fuel Type</p>
+              <p className="text-sm text-gray-400">Fuel Type</p>
             </div>
-            <div>
-              <p className="text-xl font-bold text-orange-500">
+            <div className="flex justify-between md:flex-col">
+              <p className="text-md text-left md:text-center font-bold text-orange-400">
                 {getTransmissionTypeNameByKey(transmissions, car.transmission)}
               </p>
-              <p className="text-md">Transmission</p>
+              <p className="text-sm text-gray-400">Transmission</p>
             </div>
-            <div>
-              <p className="text-xl font-bold text-orange-500">
+            <div className="flex justify-between md:flex-col">
+              <p className="text-md text-left md:text-center font-bold text-orange-400">
                 {getBodyTypeNameByKey(bodyTypes, car.body)}
               </p>
-              <p className="text-md">Body Type</p>
+              <p className="text-sm text-gray-400">Body Type</p>
             </div>
           </div>
         </div>
 
         {/* Scrollable Configuration Section */}
-        <div className="col-span-10 lg:col-span-3 h-screen overflow-y-scroll pb-56 lg:pb-48 p-10">
-          <h2 className="text-2xl font-bold">Features</h2>
+        <div className="col-span-10 lg:col-span-10 h-full overflow-y-scroll pb-56 lg:pb-48 p-5">
+          <h2 className="text-2xl font-bold mb-4">Features</h2>
 
           <Accordion variant="splitted" selectionMode="multiple">
             <AccordionItem
@@ -252,9 +275,9 @@ export default function CarDetails() {
                 {exteriorFeatures.map((feature, index) => (
                   <Card
                     key={index}
-                    className="border dark:bg-neutral-900 bg-neutral-200"
+                    className="border bg-gradient-to-bl dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 hover:scale-95 transform transition-transform"
                   >
-                    <CardBody className="flex justify-center items-center">
+                    <CardBody className="flex justify-center items-center p-3">
                       <h3 className="text-lg font-bold text-center ">
                         {typeof feature === "string" ? feature : feature.name}
                       </h3>
@@ -274,9 +297,9 @@ export default function CarDetails() {
                 {interiorFeatures.map((feature, index) => (
                   <Card
                     key={index}
-                    className="border dark:bg-neutral-900 bg-neutral-200"
+                    className="border bg-gradient-to-bl dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 hover:scale-95 transform transition-transform"
                   >
-                    <CardBody className="flex justify-center items-center">
+                    <CardBody className="flex justify-center items-center p-3">
                       <h3 className="text-lg font-bold text-center ">
                         {typeof feature === "string" ? feature : feature.name}
                       </h3>
@@ -290,7 +313,7 @@ export default function CarDetails() {
       </div>
 
       {/* Sticky bottom container */}
-      <div className="fixed bottom-0 left-0 w-full bg-neutral-100 dark:bg-neutral-900 border-t border-neutral-300 dark:border-neutral-800 shadow-lg py-4 z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 border-t border-neutral-800 shadow-lg py-4 z-50">
         <div className="container mx-auto flex lg:flex-row flex-col justify-between items-center px-4">
           <div>
             <p className="text-2xl font-bold">
@@ -305,14 +328,13 @@ export default function CarDetails() {
               </p>
             </div>
             <Button
-              color="primary"
+              className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:from-green-500 hover:to-green-700"
               onClick={async () => {
                 const auth = getAuth();
                 const user = auth.currentUser;
 
                 if (user) {
                   try {
-                    // Confirm the rental with an alert or SweetAlert
                     const result = await Swal.fire({
                       title: "Confirm Rental?",
                       text: `Total cost: RM${totalCost.toLocaleString()}`,
@@ -324,16 +346,12 @@ export default function CarDetails() {
                       customClass: {
                         popup:
                           theme === "dark"
-                            ? "bg-black rounded-xl text-white"
-                            : "bg-white rounded-xl text-black", // Apply your theme's class
-                        title: "swal-title",
-                        confirmButton: "swal-confirm",
-                        cancelButton: "swal-cancel",
+                            ? "bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-xl text-white"
+                            : "from-neutral-300 to-neutral-200 bg-gradient-br rounded-xl text-black", // Apply your theme's class
                       },
                     });
 
                     if (result.isConfirmed) {
-                      // Extract the rental period from search params
                       const startDateStr = searchParams.get("start");
                       const endDateStr = searchParams.get("end");
 
@@ -379,6 +397,11 @@ export default function CarDetails() {
                           userId: user.uid, // Optionally, store the user ID
                         });
 
+                        await addDoc(
+                          collection(db, "cars-used", "cars", carId),
+                          { user: user.uid }
+                        );
+
                         // Show success toast
                         toast.success("Rental confirmed!", {
                           autoClose: 2000,
@@ -393,8 +416,6 @@ export default function CarDetails() {
                     }
                   } catch (error) {
                     console.error("Error confirming rental:", error);
-
-                    // Show error toast
                     toast.error(
                       "There was an issue confirming your rental. Please try again.",
                       {
@@ -406,7 +427,6 @@ export default function CarDetails() {
                     );
                   }
                 } else {
-                  // Show a message to log in if the user is not authenticated
                   toast.error("Please log in to proceed with the rental.", {
                     autoClose: 2000,
                     closeOnClick: true,

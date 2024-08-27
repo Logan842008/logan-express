@@ -4,7 +4,7 @@ import { Image } from "@nextui-org/react";
 
 export default function Home() {
   return (
-    <section className="relative flex items-center justify-center w-full overflow-hidden h-screen">
+    <section className="relative flex items-center justify-center w-full">
       {/* Gradient Overlay */}
       <div className="absolute rounded-none inset-0 bg-gradient-to-l h-full overflow-hidden from-black to-transparent z-10"></div>
 

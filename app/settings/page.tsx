@@ -39,8 +39,11 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
+  getDoc,
   getDocs,
   query,
+  QueryDocumentSnapshot,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -150,6 +153,7 @@ export default function Profile() {
   );
   const [meow, setMeow] = useState<any | null>(null);
   const [reloadData, setReloadData] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [userOrders, setUserOrders] = useState<
     {
       id: string;
@@ -184,6 +188,26 @@ export default function Profile() {
       orderDate: string;
     }[]
   >([]);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // If user is not authenticated, redirect and show a toast
+        toast.error("Access denied", {
+          autoClose: 2000,
+          closeOnClick: true,
+          position: "bottom-right",
+          theme,
+        });
+        router.push("/");
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -342,8 +366,6 @@ export default function Profile() {
           setLocations(
             locations.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
           );
-        } else {
-          setUser(null);
         }
       });
 
@@ -367,11 +389,7 @@ export default function Profile() {
   };
 
   const addCar = async (onClose: () => void) => {
-    // Log the form data to check what's being captured
-    console.log("Car Data: ", car);
-    console.log("Model File: ", modelFile);
-
-    if (!modelFile) {
+    if (!newSellingCar.modelimg) {
       showToast("Please provide all required files", {
         type: "error",
         autoClose: 2000,
@@ -390,12 +408,15 @@ export default function Profile() {
       });
 
       // Proceed with the file uploads and database insertion
-      const modelStorageRef = ref(storage, `cars/${modelFile.name}`);
-      await uploadBytes(modelStorageRef, modelFile);
+      const modelStorageRef = ref(
+        storage,
+        `cars/${newSellingCar.modelimg.name}`
+      );
+      await uploadBytes(modelStorageRef, newSellingCar.modelimg);
       const modelUrl = await getDownloadURL(modelStorageRef);
 
       const carData = {
-        ...car,
+        ...newSellingCar,
         modelimg: modelUrl,
       };
 
@@ -471,37 +492,54 @@ export default function Profile() {
         });
 
         if (carType === "sell") {
-          // Delete the main car document in 'cars-sell' collection
+          // Check if the car is present in the orders collection
+          const orderSnapshot = await getDocs(
+            collection(db, "cars-used", "cars", carId)
+          );
+          if (!orderSnapshot.empty) {
+            showToast("Car is currently ordered by users. Cannot delete.", {
+              type: "error",
+              autoClose: 3000,
+              closeOnClick: true,
+              position: "bottom-right",
+              theme,
+            });
+            return;
+          }
           const carDocRef = doc(db, "cars-sell", carId);
           await deleteDoc(carDocRef);
-
-          // Delete related documents in 'car-configuration'
-          const configQuery = query(
-            collection(db, "car-configuration"),
-            where("carId", "==", carId)
-          );
-          const configSnapshot = await getDocs(configQuery);
-
-          // Delete each document found in 'car-configuration'
-          configSnapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
+          showToast("Car deleted successfully!", {
+            type: "success",
+            autoClose: 2000,
+            closeOnClick: true,
+            position: "bottom-right",
+            theme,
           });
+
+          // Refresh the data after deletion
+          setReloadData((prev) => !prev);
         } else if (carType === "rent") {
+          // Check if the car is listed in any rental period documents
+          const rentalPeriodSnapshot = await getDocs(
+            collection(db, "cars-used", "cars", carId)
+          );
+          if (!rentalPeriodSnapshot.empty) {
+            showToast(
+              "Car is currently listed in a rental period. Cannot delete.",
+              {
+                type: "error",
+                autoClose: 3000,
+                closeOnClick: true,
+                position: "bottom-right",
+                theme,
+              }
+            );
+            return;
+          }
+
           // Delete the main car document in 'cars-rent' collection
           const carDocRef = doc(db, "cars-rent", carId);
           await deleteDoc(carDocRef);
-
-          // Delete related documents in 'car-rental-period'
-          const rentalPeriodQuery = query(
-            collection(db, "car-rental-period"),
-            where("carId", "==", carId)
-          );
-          const rentalPeriodSnapshot = await getDocs(rentalPeriodQuery);
-
-          // Delete each document found in 'car-rental-period'
-          rentalPeriodSnapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
-          });
         }
 
         showToast("Car deleted successfully!", {
@@ -851,10 +889,9 @@ export default function Profile() {
     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
     return brightness > 128 ? "#000" : "#FFF";
   }
-  console.log(engineTypes);
 
   const ProfileInfo = () => (
-    <div className="mt-10 w-full overflow-y-hidden ">
+    <div className="mt-10 w-full h-full">
       <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-3">
         <div className="w-full sm:w-auto mb-2 sm:mb-0">Display Name:</div>
         <Snippet
@@ -937,10 +974,10 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col lg:px-4 rounded-3xl items-center justify-center">
+    <div className="w-full h-full lg:h-[calc(100vh-150px)] flex flex-col lg:px-4 rounded-3xl items-center justify-center">
       {user && (
         <div className="w-full flex xl:flex-row flex-col justify-between h-full items-center gap-7">
-          <div className="bg-neutral-200 w-full xl:w-1/3 flex h-full flex-col justify-between items-center dark:bg-neutral-800 p-4 rounded-3xl">
+          <div className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 w-full xl:w-1/3 flex h-full flex-col justify-between items-center p-4 rounded-3xl">
             <h2 className="text-3xl mb-4 font-extrabold">PROFILE</h2>
             <Image
               isBlurred
@@ -1037,16 +1074,16 @@ export default function Profile() {
           <div
             className={
               !meow?.isAdmin
-                ? "w-full xl:w-2/3 flex flex-col gap-6 bg-neutral-200 justify-between items-start dark:bg-neutral-800 p-7 rounded-3xl align-top lg:h-full h-full"
-                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll lg:h-full h-full"
+                ? "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200  p-5 pb-16 rounded-3xl align-top h-full"
+                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll h-full"
             }
           >
-            <Tabs
-              defaultValue="orders"
-              className="w-full flex flex-col items-center"
-            >
-              {!meow?.isAdmin ? (
-                <TabsList className="inline-flex bg-neutral-300 dark:bg-neutral-700 rounded-lg p-1">
+            {!meow?.isAdmin ? (
+              <Tabs
+                defaultValue="orders"
+                className="w-full flex flex-col h-full items-center"
+              >
+                <TabsList className="inline-flex bg-gradient-to-tl dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 rounded-lg ">
                   <TabsTrigger value="orders" className="rounded-lg px-4 py-2">
                     Orders
                   </TabsTrigger>
@@ -1054,31 +1091,140 @@ export default function Profile() {
                     Rentals
                   </TabsTrigger>
                 </TabsList>
-              ) : (
-                <></>
-              )}
-              <div className="flex-grow w-full mt-2 ">
-                {meow?.isAdmin ? (
-                  <>
-                    <Accordion>
-                      <AccordionItem
-                        title="Selling Cars"
-                        className="bg-neutral-100 dark:bg-neutral-700 px-4 py-4 rounded-xl my-3 oveflow-y-scroll"
-                        startContent={
-                          <Button
-                            color="primary"
-                            onPress={openSellingAddCarModal}
-                            className="w-full"
+                <div className="h-full w-full lg:px-10">
+                  <TabsContent
+                    className="rounded-lg lg:p-4 p-2 max-h-full w-full overflow-y-scroll"
+                    value="orders"
+                  >
+                    <div className="h-full overflow-auto">
+                      {userOrders.length === 0 ? (
+                        <p className="text-center">
+                          No purchase history found.
+                        </p>
+                      ) : (
+                        userOrders.map((order) => (
+                          <div
+                            key={order.id}
+                            className="flex flex-col my-4 lg:flex-row items-center justify-between p-4 bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100 border-2 border-orange-500 rounded-lg shadow"
                           >
-                            Add
-                          </Button>
-                        }
-                      >
-                        <div className="grid grid-cols-1 gap-4">
-                          {cars.map((car) => (
+                            <img
+                              src={order.modelimg}
+                              width={200}
+                              alt={`${order.brand} ${order.model}`}
+                              className="rounded-lg object-cover h-full"
+                            />
+                            <div className="lg:ml-4 flex-grow text-center lg:text-left">
+                              <h4 className="text-lg font-bold">
+                                {getBrandNameByKey(brands, order.brand)}{" "}
+                                {order.model}
+                              </h4>
+                              <div className="flex flex-col">
+                                <small>
+                                  Body Type:{" "}
+                                  {getBodyTypeNameByKey(bodyTypes, order.body)}
+                                </small>
+                                <small>
+                                  Fuel Type:{" "}
+                                  {getFuelTypeNameByKey(fuelTypes, order.fuel)}
+                                </small>
+                                <small>
+                                  Transmission:{" "}
+                                  {getTransmissionTypeNameByKey(
+                                    transmissionTypes,
+                                    order.transmission
+                                  )}
+                                </small>
+                                <small>Horsepower: {order.hp} hp</small>
+                              </div>
+                            </div>
+                            <div className="flex flex-col lg:items-end items-center mt-5 lg:mt-0">
+                              <h4 className="text-lg font-bold text-center lg:text-right text-orange-500">
+                                RM {order.price.toLocaleString()}
+                              </h4>
+                              <small className="text-center lg:text-right">
+                                Ordered Date: {order.orderDate}
+                              </small>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </TabsContent>
+                  <TabsContent
+                    className=" rounded-lg lg:p-4 p-2 max-h-full w-full overflow-y-scroll"
+                    value="rents"
+                  >
+                    <div className="h-full overflow-auto">
+                      {userRentals.length === 0 ? (
+                        <p>No rental history found.</p>
+                      ) : (
+                        userRentals.map((rental) => (
+                          <div
+                            key={rental.id}
+                            className="flex flex-col my-4 lg:flex-row items-center justify-between p-4 bg-gradient-to-tl dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100 border-2 border-orange-500 rounded-lg shadow"
+                          >
+                            <img
+                              src={rental.car.modelimg}
+                              width={200}
+                              alt={`${rental.car.brand} ${rental.car.model}`}
+                              className="rounded-lg object-cover h-full"
+                            />
+                            <div className="lg:ml-4 flex-grow">
+                              <h4 className="text-lg font-bold">
+                                {rental.car.brand} {rental.car.model}
+                              </h4>
+                              <div className="flex flex-col">
+                                <small>Location: {rental.car.location}</small>
+                                <small>Body Type: {rental.car.body}</small>
+                                <small>Fuel Type: {rental.car.fuel}</small>
+                                <small>
+                                  Transmission: {rental.car.transmission}
+                                </small>
+                                <small>Seats: {rental.car.seats}</small>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                              <h4 className="text-lg font-bold text-orange-500">
+                                RM {rental.totalPrice.toLocaleString()}
+                              </h4>
+                              <small>Start Time: {rental.start}</small>
+                              <small>End Time: {rental.end}</small>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            ) : (
+              <></>
+            )}
+            <div className="flex-grow h-full w-full ">
+              {meow?.isAdmin ? (
+                <>
+                  <Accordion>
+                    <AccordionItem
+                      title="Selling Cars"
+                      className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 px-4 py-4 rounded-xl my-3 oveflow-y-scroll"
+                      startContent={
+                        <Button
+                          color="primary"
+                          onPress={openSellingAddCarModal}
+                          className="w-full"
+                        >
+                          Add
+                        </Button>
+                      }
+                    >
+                      <div className="grid grid-cols-1 gap-4">
+                        {!cars.length ? (
+                          <h2 className="text-center">No cars sell</h2>
+                        ) : (
+                          cars.map((car) => (
                             <div
                               key={car.id}
-                              className="flex flex-col lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
+                              className="flex flex-col lg:flex-row items-center justify-between p-4 bg-gradient-to-tl dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100 border-2 border-orange-500 rounded-lg shadow"
                             >
                               <img
                                 src={car.modelimg}
@@ -1132,27 +1278,31 @@ export default function Profile() {
                                 </Button>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      </AccordionItem>
-                      <AccordionItem
-                        title="Renting Cars"
-                        className="bg-neutral-100 dark:bg-neutral-700 px-4 py-4 rounded-xl my-3 overflow-y-scroll"
-                        startContent={
-                          <Button
-                            color="primary"
-                            onPress={openRentingAddCarModal}
-                            className="w-full"
-                          >
-                            Add
-                          </Button>
-                        }
-                      >
-                        <div className="grid grid-cols-1 gap-4">
-                          {rentalcars.map((car) => (
+                          ))
+                        )}
+                      </div>
+                    </AccordionItem>
+                    <AccordionItem
+                      title="Renting Cars"
+                      className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 px-4 py-4 rounded-xl my-3 overflow-y-scroll"
+                      startContent={
+                        <Button
+                          color="primary"
+                          onPress={openRentingAddCarModal}
+                          className="w-full"
+                        >
+                          Add
+                        </Button>
+                      }
+                    >
+                      <div className="grid grid-cols-1 gap-4">
+                        {!rentalcars.length ? (
+                          <h2 className="text-center">No cars rent</h2>
+                        ) : (
+                          rentalcars.map((car) => (
                             <div
                               key={car.id}
-                              className="flex flex-col lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
+                              className="flex flex-col lg:flex-row items-center justify-between p-4 bg-gradient-to-tl dark:from-neutral-800 dark:to-neutral-700 from-neutral-200 to-neutral-100 border-2 border-orange-500 rounded-lg shadow"
                             >
                               <img
                                 src={car.modelimg}
@@ -1213,123 +1363,16 @@ export default function Profile() {
                                 </Button>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      </AccordionItem>
-                    </Accordion>
-                  </>
-                ) : (
-                  <>
-                    <TabsContent
-                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 lg:h-[700px] h-full overflow-y-scroll"
-                      value="orders"
-                    >
-                      <div className="h-full overflow-auto">
-                        {userOrders.length === 0 ? (
-                          <p>No purchase history found.</p>
-                        ) : (
-                          userOrders.map((order) => (
-                            <div
-                              key={order.id}
-                              className="flex flex-col my-4 lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
-                            >
-                              <img
-                                src={order.modelimg}
-                                width={200}
-                                alt={`${order.brand} ${order.model}`}
-                                className="rounded-lg object-cover h-full"
-                              />
-                              <div className="lg:ml-4 flex-grow">
-                                <h4 className="text-lg font-bold">
-                                  {getBrandNameByKey(brands, order.brand)}{" "}
-                                  {order.model}
-                                </h4>
-                                <div className="flex flex-col">
-                                  <small>
-                                    Body Type:{" "}
-                                    {getBodyTypeNameByKey(
-                                      bodyTypes,
-                                      order.body
-                                    )}
-                                  </small>
-                                  <small>
-                                    Fuel Type:{" "}
-                                    {getFuelTypeNameByKey(
-                                      fuelTypes,
-                                      order.fuel
-                                    )}
-                                  </small>
-                                  <small>
-                                    Transmission:{" "}
-                                    {getTransmissionTypeNameByKey(
-                                      transmissionTypes,
-                                      order.transmission
-                                    )}
-                                  </small>
-                                  <small>Horsepower: {order.hp} hp</small>
-                                </div>
-                              </div>
-                              <div className="flex flex-col items-end">
-                                <h4 className="text-lg font-bold text-orange-500">
-                                  Price: RM {order.price.toLocaleString()}
-                                </h4>
-                                <small>Ordered Date: {order.orderDate}</small>
-                              </div>
-                            </div>
                           ))
                         )}
                       </div>
-                    </TabsContent>
-                    <TabsContent
-                      className="bg-neutral-300 dark:bg-neutral-700 rounded-lg p-4 h-full overflow-y-scroll"
-                      value="rents"
-                    >
-                      <div className="h-full overflow-auto">
-                        {userRentals.length === 0 ? (
-                          <p>No rental history found.</p>
-                        ) : (
-                          userRentals.map((rental) => (
-                            <div
-                              key={rental.id}
-                              className="flex flex-col my-4 lg:flex-row items-center justify-between p-4 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow"
-                            >
-                              <img
-                                src={rental.car.modelimg}
-                                width={200}
-                                alt={`${rental.car.brand} ${rental.car.model}`}
-                                className="rounded-lg object-cover h-full"
-                              />
-                              <div className="lg:ml-4 flex-grow">
-                                <h4 className="text-lg font-bold">
-                                  {rental.car.brand} {rental.car.model}
-                                </h4>
-                                <div className="flex flex-col">
-                                  <small>Location: {rental.car.location}</small>
-                                  <small>Body Type: {rental.car.body}</small>
-                                  <small>Fuel Type: {rental.car.fuel}</small>
-                                  <small>
-                                    Transmission: {rental.car.transmission}
-                                  </small>
-                                  <small>Seats: {rental.car.seats}</small>
-                                </div>
-                              </div>
-                              <div className="flex flex-col items-end">
-                                <h4 className="text-lg font-bold text-orange-500">
-                                  Total Price: RM{" "}
-                                  {rental.totalPrice.toLocaleString()}
-                                </h4>
-                                <small>Start Time: {rental.start}</small>
-                                <small>End Time: {rental.end}</small>
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </TabsContent>
-                  </>
-                )}
-              </div>
-            </Tabs>
+                    </AccordionItem>
+                  </Accordion>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
 
           {/* Edit Car Modal */}
@@ -1481,6 +1524,56 @@ export default function Profile() {
                       </AutocompleteItem>
                     ))}
                   </Autocomplete>
+
+                  <Input
+                    isRequired
+                    type="number"
+                    name="hp"
+                    onChange={(e) => handleInputChange(e, setSellingCarToEdit)}
+                    label="Horse Power"
+                    placeholder="1"
+                    value={sellingCarToEdit?.hp}
+                    labelPlacement="outside"
+                    endContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">hp</span>
+                      </div>
+                    }
+                  />
+
+                  <Input
+                    isRequired
+                    type="number"
+                    name="mileage"
+                    onChange={(e) => handleInputChange(e, setSellingCarToEdit)}
+                    label="Mileage"
+                    placeholder="1"
+                    value={sellingCarToEdit?.mileage}
+                    labelPlacement="outside"
+                    endContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">km</span>
+                      </div>
+                    }
+                  />
+
+                  <Input
+                    isRequired
+                    type="number"
+                    name="topspeed"
+                    onChange={(e) => handleInputChange(e, setSellingCarToEdit)}
+                    label="Top Speed"
+                    placeholder="1"
+                    value={sellingCarToEdit?.topspeed}
+                    labelPlacement="outside"
+                    endContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">
+                          kmph
+                        </span>
+                      </div>
+                    }
+                  />
 
                   {/* Body Type Selection */}
                   <Autocomplete
@@ -1888,6 +1981,53 @@ export default function Profile() {
                       </AutocompleteItem>
                     ))}
                   </Autocomplete>
+
+                  <Input
+                    isRequired
+                    type="number"
+                    name="hp"
+                    onChange={(e) => handleInputChange(e, setNewSellingCar)}
+                    label="Horse Power"
+                    placeholder="1"
+                    labelPlacement="outside"
+                    endContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">hp</span>
+                      </div>
+                    }
+                  />
+
+                  <Input
+                    isRequired
+                    type="number"
+                    name="mileage"
+                    onChange={(e) => handleInputChange(e, setNewSellingCar)}
+                    label="Mileage"
+                    placeholder="1"
+                    labelPlacement="outside"
+                    endContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">km</span>
+                      </div>
+                    }
+                  />
+
+                  <Input
+                    isRequired
+                    type="number"
+                    name="topspeed"
+                    onChange={(e) => handleInputChange(e, setNewSellingCar)}
+                    label="Top Speed"
+                    placeholder="1"
+                    labelPlacement="outside"
+                    endContent={
+                      <div className="pointer-events-none flex items-center">
+                        <span className="text-default-400 text-small">
+                          kmph
+                        </span>
+                      </div>
+                    }
+                  />
 
                   {/* Body Type Selection */}
                   <Autocomplete

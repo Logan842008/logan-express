@@ -21,7 +21,7 @@ export default function ClientLayout({
   }, [auth]);
 
   return loading ? (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-full">
       <Spinner label="Loading..." color="primary" labelColor="primary" />
     </div>
   ) : (

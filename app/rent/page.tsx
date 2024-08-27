@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/config";
+import { app, db } from "@/config";
 import {
   Card,
   CardBody,
@@ -19,6 +19,9 @@ import {
   parseDateTime,
 } from "@internationalized/date";
 import { useRouter } from "next/navigation";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { toast } from "react-toastify";
+import { useTheme } from "next-themes";
 
 export default function Rent() {
   const [cars, setCars] = useState<any[]>([]);
@@ -27,14 +30,35 @@ export default function Rent() {
   const [locations, setLocations] = useState<any[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState({
-    start: parseDateTime(`${today(getLocalTimeZone()).toString()}T00:00`),
-    end: parseDateTime(
-      `${today(getLocalTimeZone()).add({ days: 7 }).toString()}T23:59`
-    ),
+    start: today(getLocalTimeZone()),
+    end: today(getLocalTimeZone()).add({ days: 7 }),
   });
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [rentalPeriods, setRentalPeriods] = useState<any[]>([]);
   const router = useRouter();
+  const auth = getAuth(app);
+  const { theme } = useTheme();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // If user is not authenticated, redirect and show a toast
+        toast.error("Access denied", {
+          autoClose: 2000,
+          closeOnClick: true,
+          position: "bottom-right",
+          theme,
+        });
+        router.push("/");
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -149,8 +173,8 @@ export default function Rent() {
   }, [cars, dateRange, priceRange, rentalPeriods, selectedLocation]);
 
   return (
-    <div className="w-full flex items-center h-full justify-center p-10">
-      <div className="grid grid-cols-1 md:grid-cols-4 w-3/4 mt-5 gap-6 ">
+    <div className="w-full flex items-center h-full justify-center overflow-x-hidden p-10">
+      <div className="grid lg:w-3/4 grid-cols-1 lg:grid-cols-4 w-full mt-5 gap-6 ">
         <DateRangePicker
           label="Rental Start / End"
           labelPlacement="outside"
@@ -159,7 +183,7 @@ export default function Rent() {
           value={dateRange}
           onChange={(range) => setDateRange(range)}
           className="mb-5 col-span-2"
-          granularity="minute"
+          granularity="day"
         />
 
         {/* Autocomplete for Location Filter */}
@@ -168,7 +192,7 @@ export default function Rent() {
           labelPlacement="outside"
           placeholder="Select Location"
           onSelectionChange={(value) => setSelectedLocation(value as string)} // Cast to string
-          className="mb-5 w-full"
+          className="relative flex items-center mb-5 w-full col-span-2 lg:col-span-1"
         >
           {locations.map((location) => (
             <AutocompleteItem
@@ -187,14 +211,14 @@ export default function Rent() {
           minValue={0}
           defaultValue={priceRange}
           onChange={(value) => setPriceRange(value as number[])}
-          className="max-w-md mb-5"
+          className="max-w mb-5 col-span-2 lg:col-span-1"
         />
 
         {filteredCars.length > 0 ? (
           filteredCars.map((car, index) => (
             <Card
               shadow="sm"
-              className="border-2 border-orange-500 col-span-2"
+              className="border-2 border-orange-500 bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 col-span-2"
               key={index}
               isPressable
               onPress={() =>
@@ -206,13 +230,12 @@ export default function Rent() {
               <CardBody className="overflow-visible p-0 flex justify-center items-center">
                 <Image
                   radius="lg"
-                  width={400}
-                  height={200}
                   alt={`${car.brand} ${car.model}`}
-                  className="w-full object-cover h-[140px] p-3"
+                  className="w-full h-full object-contain p-3"
                   src={car.modelimg}
                 />
               </CardBody>
+
               <Divider />
               <CardFooter className="text-small justify-between items-end">
                 <div className="flex flex-col justify-start">

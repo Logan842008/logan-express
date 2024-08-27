@@ -3,19 +3,19 @@ import { Metadata } from "next";
 import clsx from "clsx";
 import { Poppins } from "next/font/google";
 import { Providers } from "./providers";
-import { siteConfig } from "@/config/site";
 import { ThemeWrapper } from "@/components/ThemeWrapper";
 import { ToastProvider } from "@/components/ToastContext";
 import ClientLayout from "./client-layout";
+import { Navbar } from "@nextui-org/navbar";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: "Logan Express",
+    template: `Car Selling and Renting Website`,
   },
-  description: siteConfig.description,
+  description: `Car Selling and Renting Website`,
   icons: {
-    icon: "/favicon.ico",
+    icon: "L",
   },
 };
 
@@ -33,20 +33,14 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <head />
-      <body
-        className={clsx(
-          "min-h-screen overflow-hidden bg-background",
-          poppins.className
-        )}
-      >
+      <body className={`h-screen ${clsx(poppins.className)}`}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "warning" }}>
           <ClientLayout>
             <ToastProvider>
               <ThemeWrapper>
-                <div className="relative flex flex-col h-screen">
+                <div className="h-full">
                   {" "}
-                  {/* Wrap everything with CarProvider */}
-                  {/* Wrap the content with ClientLayout */}
+                  {/* Ensure full height container */}
                   <main className="container mx-auto max-w-full px-0 flex-grow">
                     {children}
                   </main>

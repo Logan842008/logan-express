@@ -7,10 +7,10 @@ export const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
   const { theme } = useTheme();
 
   return (
-    <>
+    <div className="h-full">
       {/* Pass the theme to the Navbar and other components */}
       <Navbar theme={theme || "light"} />
       {children}
-    </>
+    </div>
   );
 };

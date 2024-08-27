@@ -202,12 +202,12 @@ export const Navbar = ({ theme }: { theme: string }) => {
             className="sm:hidden"
           />
           <NavbarBrand>
-            <Button
+            <p
               className="font-bold text-inherit bg-transparent"
               onClick={() => router.push("/")}
             >
               LOGAN EXPRESS
-            </Button>
+            </p>
           </NavbarBrand>
         </NavbarContent>
 

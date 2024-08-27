@@ -3,12 +3,12 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCR3mzoB1WbIP3n2DRghDEziJEm2h1RbKw",
-  authDomain: "logan-express.firebaseapp.com",
-  projectId: "logan-express",
-  storageBucket: "logan-express.appspot.com",
-  messagingSenderId: "647144110234",
-  appId: "1:647144110234:web:04da11aa192c87809d8723",
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_PROJECT_ID,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
 // Initialize Firebase

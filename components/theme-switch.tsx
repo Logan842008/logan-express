@@ -28,7 +28,7 @@ export const ThemeSwitcher: FC<ThemeSwitchProps> = ({
       aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
       onChange={onChange}
       size="md"
-      className={className}
+      className={`${className} md:block hidden`}
       color="primary"
       classNames={{
         thumb: isDarkMode ? "bg-white" : "bg-black", // Keep the thumb white in dark mode, black in light mode

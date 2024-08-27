@@ -229,7 +229,9 @@ export const Navbar = ({ theme }: { theme: string }) => {
             <NavbarItem>
               <Button
                 as={Link}
+                size="md"
                 color="primary"
+                className="sm:block hidden text-center p-2"
                 onClick={signInWithGoogle}
                 variant="flat"
               >
@@ -312,6 +314,20 @@ export const Navbar = ({ theme }: { theme: string }) => {
               </Link>
             </NavbarMenuItem>
           ))}
+          {!user ? (
+            <Button
+              as={Link}
+              size="md"
+              color="primary"
+              className="text-center p-2"
+              onClick={signInWithGoogle}
+              variant="flat"
+            >
+              Sign In / Register
+            </Button>
+          ) : (
+            <></>
+          )}
         </NavbarMenu>
         <ThemeSwitcher />
       </NextUINavbar>

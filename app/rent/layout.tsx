@@ -4,10 +4,8 @@ export default function RentLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col lg:overflow-y-hidden items-center justify-center">
-      <div className="inline-block w-full text-center justify-center">
-        {children}
-      </div>
+    <section className="flex flex-col h-screen items-center p-10">
+      <div className="inline-block w-full text-center ">{children}</div>
     </section>
   );
 }

@@ -190,120 +190,131 @@ export const Navbar = ({ theme }: { theme: string }) => {
   console.log(isAdmin);
 
   return (
-    <NextUINavbar
-      maxWidth="xl"
-      position="sticky"
-      onMenuOpenChange={setIsMenuOpen}
-    >
-      <NavbarContent>
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden"
-        />
-        <NavbarBrand>
-          <p className="font-bold text-inherit">LOGAN EXPRESS</p>
-        </NavbarBrand>
-      </NavbarContent>
-
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        {menuItems.map((item) => (
-          <NavbarItem key={item.route} isActive={pathname === item.route}>
-            <Link
-              color={pathname === item.route ? "primary" : "foreground"}
-              href={item.route}
+    <div className="absolute w-full">
+      <NextUINavbar
+        maxWidth="xl"
+        position="sticky"
+        onMenuOpenChange={setIsMenuOpen}
+      >
+        <NavbarContent>
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="sm:hidden"
+          />
+          <NavbarBrand>
+            <p
+              className="font-bold text-inherit cursor-pointer"
+              onClick={() => router.push("/")}
             >
-              {item.label}
-            </Link>
-          </NavbarItem>
-        ))}
-      </NavbarContent>
-
-      {!user ? (
-        <NavbarContent justify="end">
-          <NavbarItem>
-            <Button
-              as={Link}
-              color="primary"
-              onClick={signInWithGoogle}
-              variant="flat"
-            >
-              Sign In / Register
-            </Button>
-          </NavbarItem>
+              LOGAN EXPRESS
+            </p>
+          </NavbarBrand>
         </NavbarContent>
-      ) : (
-        <NavbarContent as="div" justify="end">
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <div
-                style={{
-                  background: imageError
-                    ? userData?.profilePicGradient ||
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                    : "transparent",
-                  borderRadius: "50%",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "2px", // For bordered effect
-                  width: "40px", // Adjust size as needed
-                  height: "40px", // Adjust size as needed
-                  cursor: "pointer", // Make the cursor a pointer when hovered
-                }}
+
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+          {menuItems.map((item) => (
+            <NavbarItem key={item.route} isActive={pathname === item.route}>
+              <Link
+                color={pathname === item.route ? "primary" : "foreground"}
+                href={item.route}
               >
-                {imageError ? (
-                  // Display a user icon in the center if the image fails to load
-                  <UserCircle2Icon />
-                ) : (
-                  <Avatar
-                    as="button"
-                    className="transition-transform hover:cursor-pointer"
-                    color="primary"
-                    name="User Avatar"
-                    size="sm"
-                    src={`${user?.photoURL}`}
-                    onError={() => setImageError(true)} // Set the error state when the image fails to load
-                    style={{
-                      visibility: imageError ? "hidden" : "visible", // Hide the image if it has failed to load
-                    }}
-                  />
-                )}
-              </div>
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{user.email}</p>
-              </DropdownItem>
-              <DropdownItem key="settings" href="/settings">
-                Settings
-              </DropdownItem>
-              <DropdownItem key="history" href="/settings">
-                History
-              </DropdownItem>
-              <DropdownItem key="logout" color="danger" onClick={handleLogout}>
-                Log Out
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+                {item.label}
+              </Link>
+            </NavbarItem>
+          ))}
         </NavbarContent>
-      )}
 
-      <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item.label}-${index}`}>
-            <Link
-              color={pathname === item.route ? "primary" : "foreground"}
-              className="w-full"
-              href={item.route}
-              size="lg"
-            >
-              {item.label}
-            </Link>
-          </NavbarMenuItem>
-        ))}
-      </NavbarMenu>
-      <ThemeSwitcher />
-    </NextUINavbar>
+        {!user ? (
+          <NavbarContent justify="end">
+            <NavbarItem>
+              <Button
+                as={Link}
+                color="primary"
+                onClick={signInWithGoogle}
+                variant="flat"
+              >
+                Sign In / Register
+              </Button>
+            </NavbarItem>
+          </NavbarContent>
+        ) : (
+          <NavbarContent as="div" justify="end">
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <div
+                  style={{
+                    background: imageError
+                      ? userData?.profilePicGradient ||
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                      : "transparent",
+                    borderRadius: "50%",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "2px", // For bordered effect
+                    width: "40px", // Adjust size as needed
+                    height: "40px", // Adjust size as needed
+                    cursor: "pointer", // Make the cursor a pointer when hovered
+                  }}
+                >
+                  {imageError ? (
+                    // Display a user icon in the center if the image fails to load
+                    <UserCircle2Icon />
+                  ) : (
+                    <Avatar
+                      as="button"
+                      className="transition-transform hover:cursor-pointer"
+                      color="primary"
+                      name="User Avatar"
+                      size="sm"
+                      src={`${user?.photoURL}`}
+                      onError={() => setImageError(true)} // Set the error state when the image fails to load
+                      style={{
+                        visibility: imageError ? "hidden" : "visible", // Hide the image if it has failed to load
+                      }}
+                    />
+                  )}
+                </div>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">{user.email}</p>
+                </DropdownItem>
+                <DropdownItem key="settings" href="/settings">
+                  Settings
+                </DropdownItem>
+                <DropdownItem key="history" href="/settings">
+                  History
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  color="danger"
+                  onClick={handleLogout}
+                >
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </NavbarContent>
+        )}
+
+        <NavbarMenu>
+          {menuItems.map((item, index) => (
+            <NavbarMenuItem key={`${item.label}-${index}`}>
+              <Link
+                color={pathname === item.route ? "primary" : "foreground"}
+                className="w-full"
+                href={item.route}
+                size="lg"
+              >
+                {item.label}
+              </Link>
+            </NavbarMenuItem>
+          ))}
+        </NavbarMenu>
+        <ThemeSwitcher />
+      </NextUINavbar>
+    </div>
   );
 };

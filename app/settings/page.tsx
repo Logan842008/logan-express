@@ -974,7 +974,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full h-full lg:h-[calc(100vh-150px)] flex flex-col lg:px-4 rounded-3xl items-center justify-center">
+    <div className="w-full flex flex-col px-4 rounded-3xl items-center justify-center">
       {user && (
         <div className="w-full flex xl:flex-row flex-col justify-between h-full items-center gap-7">
           <div className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 w-full xl:w-1/3 flex h-full flex-col justify-between items-center p-4 rounded-3xl">
@@ -1075,7 +1075,7 @@ export default function Profile() {
             className={
               !meow?.isAdmin
                 ? "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200  p-5 pb-16 rounded-3xl align-top h-full"
-                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top overflow-y-scroll h-full"
+                : "w-full xl:w-2/3 flex flex-col gap-6 justify-between items-start  rounded-3xl align-top lg:overflow-y-scroll h-full"
             }
           >
             {!meow?.isAdmin ? (
@@ -1096,7 +1096,7 @@ export default function Profile() {
                     className="rounded-lg lg:p-4 p-2 max-h-full w-full overflow-y-scroll"
                     value="orders"
                   >
-                    <div className="h-full overflow-auto">
+                    <div className="h-full lg:overflow-auto">
                       {userOrders.length === 0 ? (
                         <p className="text-center">
                           No purchase history found.
@@ -1154,7 +1154,7 @@ export default function Profile() {
                     className=" rounded-lg lg:p-4 p-2 max-h-full w-full overflow-y-scroll"
                     value="rents"
                   >
-                    <div className="h-full overflow-auto">
+                    <div className="h-full lg:overflow-auto">
                       {userRentals.length === 0 ? (
                         <p className="text-center">No rental history found.</p>
                       ) : (
@@ -1206,7 +1206,7 @@ export default function Profile() {
                   <Accordion>
                     <AccordionItem
                       title="Selling Cars"
-                      className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 px-4 py-4 rounded-xl my-3 oveflow-y-scroll"
+                      className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 px-4 py-4 rounded-xl my-3 lg:oveflow-y-scroll"
                       startContent={
                         <Button
                           color="primary"
@@ -1284,7 +1284,7 @@ export default function Profile() {
                     </AccordionItem>
                     <AccordionItem
                       title="Renting Cars"
-                      className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 px-4 py-4 rounded-xl my-3 overflow-y-scroll"
+                      className="bg-gradient-to-br dark:from-neutral-900 dark:to-neutral-800 from-neutral-300 to-neutral-200 px-4 py-4 rounded-xl my-3 lg:overflow-y-scroll"
                       startContent={
                         <Button
                           color="primary"

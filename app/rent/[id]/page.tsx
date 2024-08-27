@@ -216,7 +216,7 @@ export default function CarDetails() {
 
   return (
     <>
-      <div className="grid grid-cols-10 items-start p-10 h-full overflow-auto lg:overflow-hidden  text-white">
+      <div className="grid grid-cols-10 items-start pt-10 h-full overflow-auto lg:overflow-hidden  text-white">
         {/* Fixed Image Section */}
         <div className="col-span-10 lg:col-span-10 flex flex-col content-center justify-items-between">
           <div className="h-full grid place-items-center">
@@ -261,10 +261,10 @@ export default function CarDetails() {
         </div>
 
         {/* Scrollable Configuration Section */}
-        <div className="col-span-10 lg:col-span-10 h-full overflow-y-scroll pb-56 lg:pb-48 p-5">
+        <div className="col-span-10 lg:col-span-10 h-full pb-32 overflow-y-scroll w-full ">
           <h2 className="text-2xl font-bold mb-4">Features</h2>
 
-          <Accordion variant="splitted" selectionMode="multiple">
+          <Accordion variant="splitted">
             <AccordionItem
               key="1"
               aria-label="exterior"

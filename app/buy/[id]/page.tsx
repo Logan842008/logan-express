@@ -556,13 +556,13 @@ export default function CarDetails() {
 
   return (
     <>
-      <div className="grid grid-cols-10 h-full">
+      <div className="grid grid-cols-10 h-screen ">
         {/* Fixed Image Section */}
-        <div className="col-span-10 lg:col-span-7  flex flex-col px-10">
-          <div className="h-[75%] grid place-items-center">
+        <div className="col-span-10 lg:col-span-10 flex flex-col px-10 h-full">
+          <div className="lg:h-[500px] w-full grid place-items-center">
             <img
               alt={`${getBrandNameByKey(brands, car.brand!)} ${car.model}`}
-              className="object-cover rounded-xl max-h-full"
+              className="object-cover rounded-xl h-full w-full"
               src={car.modelimg!}
             />
           </div>
@@ -595,8 +595,8 @@ export default function CarDetails() {
         </div>
 
         {/* Scrollable Configuration Section */}
-        <div className="col-span-10 lg:col-span-3 h-screen overflow-y-scroll pb-56 lg:pb-32 p-10">
-          <Accordion variant="splitted" selectionMode="multiple">
+        <div className="col-span-10 lg:col-span-10 pb-32 p-10">
+          <Accordion variant="splitted">
             <AccordionItem
               key="1"
               aria-label="engine"

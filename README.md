@@ -18,6 +18,14 @@ This is a template for creating applications using Next.js 14 (app directory) an
 
 ### 1. Clone the Folder
 
+You can clone the app by using the code
+
+```bash
+git clone https://github.com/Logan842008/logan-express.git
+```
+
+Or download the zip file
+
 ### 2. Install dependencies
 
 You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:

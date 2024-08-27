@@ -16,9 +16,9 @@ This is a template for creating applications using Next.js 14 (app directory) an
 
 ## How to Use
 
-### Clone the Folder
+### 1. Clone the Folder
 
-### Install dependencies
+### 2. Install dependencies
 
 You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 
@@ -26,7 +26,7 @@ You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
 npm install
 ```
 
-### Run the development server
+### 3. Run the development server
 
 ```bash
 npm run dev

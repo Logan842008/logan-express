@@ -16,7 +16,7 @@ This is a template for creating applications using Next.js 14 (app directory) an
 
 ## How to Use
 
-## Clone the Folder
+### Clone the Folder
 
 ### Install dependencies
 

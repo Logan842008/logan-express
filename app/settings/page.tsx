@@ -1156,7 +1156,7 @@ export default function Profile() {
                   >
                     <div className="h-full overflow-auto">
                       {userRentals.length === 0 ? (
-                        <p>No rental history found.</p>
+                        <p className="text-center">No rental history found.</p>
                       ) : (
                         userRentals.map((rental) => (
                           <div

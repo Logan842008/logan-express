@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   description: `Car Selling and Renting Website`,
   icons: {
-    icon: "L",
+    icon: "icon.ico",
   },
 };
 
